@@ -6,6 +6,8 @@ const pg = require("pg");
 const dotenv = require("dotenv");
 
 
+
+
 // read data from JSON file
 const movies = require("./MovieData/data.json");
 const KEY = "35024a323cf49dc7c1418e232abcf0ef";
@@ -18,6 +20,8 @@ const client = new pg.Client(DATABASE_URL);
 const app = express();
 dotenv.config();
 
+
+app.use(express.json());
 
 app.get('/', moviesHandler);
 app.get('/favorite', favoriteHandler);
