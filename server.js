@@ -2,14 +2,22 @@
 
 const express = require("express");
 const axios = require("axios");
+const pg = require("pg");
+const dotenv = require("dotenv");
+
 
 // read data from JSON file
 const movies = require("./MovieData/data.json");
-
 const KEY = "35024a323cf49dc7c1418e232abcf0ef";
+
+// DB url taken from .env
+const DATABASE_URL = process.env.DATABASE_URL;
+const client = new pg.Client(DATABASE_URL);
 
 // initializing the server
 const app = express();
+dotenv.config();
+
 
 app.get('/', moviesHandler);
 app.get('/favorite', favoriteHandler);
@@ -20,10 +28,24 @@ app.get('/searchMovies', searchHandler);
 app.get('/topRated', topRatedHandler);
 app.get("/popular", popularMoviesHandler);
 
+// requst for DB ("Task13")
+app.post("/addMovie", addMovieHandler);
+app.get("/getMovies", getMoviesHandler);
+
+
+
 
 // error and not found handler 
 app.use("*", notFoundHandler);
 app.use(errorHandler);
+
+// here's our Counstuctor 
+function Movie(title, poster_path, overview){
+    this.title = title;
+    this.poster_path = poster_path;
+    this.overview = overview;
+}
+
 
 
 
@@ -99,12 +121,29 @@ function popularMoviesHandler(req, res) {
   }
   
 
+  function addMovieHandler(req, res){
+    const movie = req.body;
+    const sql = `INSERT INTO moviesTable(title, release_date, poster_path, overview , comment) VALUES($1, $2, $3, $4, $5) RETURNING *`;
+    const values = [movie.title, movie.release_date, movie.poster_path, movie.overview, movie.comment];
+    client.query(sql, values).then((result)=>{
+        return res.status(201).json(result.rows);
+    }).catch((error) => {
+        errorHandler(error, req, res);
+    });
+};
 
-function Movie(title, poster_path, overview){
-    this.title = title;
-    this.poster_path = poster_path;
-    this.overview = overview;
-}
+function getMoviesHandler(req, res){
+    const sql = `SELECT * FROM moviesTable`;
+
+    client.query(sql).then((result) => {
+        return res.status(200).json(result.rows);
+    }).catch((error) => {
+        errorHandler(error, req, res);
+    });
+};
+
+
+
 
 function errorHandler(error, req, res) {
     const err = {
