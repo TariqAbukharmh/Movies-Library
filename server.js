@@ -33,6 +33,9 @@ app.post("/addMovie", addMovieHandler);
 app.get("/getMovies", getMoviesHandler);
 
 
+// update and delete requst  DB
+app.put("/updateMovie : id", updateHandler)
+
 
 
 
@@ -143,6 +146,26 @@ function getMoviesHandler(req, res){
         errorHandler(error, req, res);
     });
 };
+
+// update and delete Handler 
+
+function updateHandler(req, res){
+    const id = req.params.id;
+    const movie = req.body;
+   
+    const sql = `UPDATE movieslibrary SET title=$1, poster_path=$2,overview=$3, comment=$4 WHERE id=$5 RETURNING *;`;
+    const values = [movie.title, movie.poster_path, movie.overview, movie.comment ,id];
+
+    client.query(sql, values).then((result) => {
+        return res.status(200).json(result.rows);
+    }).catch((error) => {
+        errorHandler(error, req, res);
+    })
+
+};
+
+
+
 
 
 
