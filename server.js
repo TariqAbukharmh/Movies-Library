@@ -35,6 +35,8 @@ app.get("/getMovies", getMoviesHandler);
 
 
 
+
+
 // error and not found handler 
 app.use("*", notFoundHandler);
 app.use(errorHandler);
@@ -145,6 +147,9 @@ function getMoviesHandler(req, res){
 
 
 
+
+
+
 function errorHandler(error, req, res) {
     const err = {
         status: 500,
@@ -157,6 +162,10 @@ function notFoundHandler(req, res) {
     return res.status(404).send("Page Not Found");
 }
 
-app.listen(3001, () => {
-    console.log("Listen on 3001");
-});
+
+client.connect().then(() => {
+    app.listen(3001, () => {
+        console.log("Listen on 3001");
+    });
+})
+
