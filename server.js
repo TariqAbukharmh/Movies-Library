@@ -10,16 +10,16 @@ const dotenv = require("dotenv");
 
 // read data from JSON file
 const movies = require("./MovieData/data.json");
-const KEY = "35024a323cf49dc7c1418e232abcf0ef";
 
-// DB url taken from .env
+// data taken from .env
+const KEY = process.env.KEY;
 const DATABASE_URL = process.env.DATABASE_URL;
+const port = process.env.PORT;
 const client = new pg.Client(DATABASE_URL);
 
 // initializing the server
 const app = express();
 dotenv.config();
-
 
 app.use(express.json());
 
@@ -38,7 +38,9 @@ app.get("/getMovies", getMoviesHandler);
 
 
 // update and delete requst  DB
-app.put("/updateMovie : id", updateHandler)
+app.put("/updateMovie : id", updateHandler);
+app.delete("/DELETE/:id", deleteHandler);
+
 
 
 
@@ -168,6 +170,19 @@ function updateHandler(req, res){
 
 };
 
+function deleteFavmovieHandler(req, res){
+    const id = req.params.id
+
+    const sql = `DELETE FROM moviesTable WHERE id=$1;`
+    const values = [id];
+
+    client.query(sql, values).then(() => {
+        return res.status(204).json({})
+    }).catch(error => {
+        errorHandler(error, req, res);
+    })
+};
+
 
 
 
@@ -192,7 +207,7 @@ function notFoundHandler(req, res) {
 
 client.connect().then(() => {
     app.listen(3001, () => {
-        console.log("Listen on 3001");
+        console.log("Listen on ${port}");
     });
 })
 
