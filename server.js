@@ -14,7 +14,7 @@ const movies = require("./MovieData/data.json");
 // data taken from .env
 const KEY = process.env.KEY;
 const DATABASE_URL = process.env.DATABASE_URL;
-const port = process.env.PORT;
+const PORT = process.env.PORT;
 //const client = new pg.Client(DATABASE_URL);
 const client = new pg.Client({
     connectionString: process.env.DATABASE_URL,
@@ -210,8 +210,8 @@ function notFoundHandler(req, res) {
 
 
 client.connect().then(() => {
-    app.listen(3001, () => {
-        console.log("Listen on ${port}");
+    app.listen(PORT, () => {
+        console.log(`lestin on port${PORT}`);
     });
 })
 
