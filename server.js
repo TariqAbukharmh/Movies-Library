@@ -15,7 +15,11 @@ const movies = require("./MovieData/data.json");
 const KEY = process.env.KEY;
 const DATABASE_URL = process.env.DATABASE_URL;
 const port = process.env.PORT;
-const client = new pg.Client(DATABASE_URL);
+//const client = new pg.Client(DATABASE_URL);
+const client = new pg.Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
+});
 
 // initializing the server
 const app = express();
